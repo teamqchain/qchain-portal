@@ -40,8 +40,11 @@ dependencies:
   get: ^4.7.3
   http: ^1.6.0
   mobile_scanner: ^7.2.0
+
   qchain_shared:
-    path: ../shared
+    git:
+      url: https://github.com/teamqchain/qchain-shared.git
+      ref: main
 
 dev_dependencies:
   flutter_lints: ^5.0.0
