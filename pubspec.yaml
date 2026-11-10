@@ -74,19 +74,8 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: formula
-      fonts:
-        - asset: assets/fonts/Formula1-Italic.ttf
-          weight: 100
-        - asset: assets/fonts/Formula1-Regular_web_0.ttf
-          weight: 200
-        - asset: assets/fonts/SF-Pro.ttf
-          weight: 100
-
     - family: SFPro
       fonts:
-        - asset: assets/fonts/SF-Pro-Text-Light.otf
-          weight: 300
         - asset: assets/fonts/SF-Pro-Text-Regular.otf
           weight: 400
         - asset: assets/fonts/SF-Pro-Text-Medium.otf
