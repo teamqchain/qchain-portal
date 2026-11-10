@@ -4,6 +4,7 @@
   var logo = document.getElementById('qp-logo');
   var video = document.getElementById('qp-video');
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var HOLD_MS = 800; // finished logo stays centred so users can read it
   var animDone = false;
   var flutterReady = false;
   var ending = false;
@@ -15,8 +16,9 @@
     animDone = true;
     splash.classList.add('qp-static');
     if (video) video.pause();
-    tryEnd();
+    setTimeout(function () { holdDone = true; tryEnd(); }, reduce ? 0 : HOLD_MS);
   }
+  var holdDone = false;
 
   if (reduce || !video) {
     finishAnim();
@@ -35,7 +37,7 @@
   }, { once: true });
 
   // Click to skip: jump to the final frame, hand off once Flutter is up.
-  splash.addEventListener('click', finishAnim);
+  splash.addEventListener('click', function () { holdDone = true; finishAnim(); tryEnd(); });
 
   // Flutter slow to boot: hold the logo with a pulse, never remove early.
   setTimeout(function () {
@@ -43,7 +45,7 @@
   }, 15000);
 
   function tryEnd() {
-    if (ending || !flutterReady || !animDone) return;
+    if (ending || !flutterReady || !holdDone) return;
     ending = true;
     waitForRect(0);
   }
