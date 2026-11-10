@@ -1,0 +1,13 @@
+html,body{background:#0A0A0A;margin:0}
+#qp-splash{position:fixed;inset:0;z-index:2147483647;background:#0A0A0A;cursor:pointer;overflow:hidden}
+/* Video is rendered at 3x the logo width with the logo centred, so both line up. */
+#qp-video{position:absolute;left:50%;top:50%;width:calc(min(80vw,640px)*3);height:auto;transform:translate(-50%,-50%);mix-blend-mode:screen;pointer-events:none}
+#qp-logo{position:absolute;left:50%;top:50%;width:min(80vw,640px);margin-left:calc(min(80vw,640px)/-2);margin-top:calc(min(80vw,640px)*-0.16403);transform-origin:0 0;visibility:hidden}
+#qp-logo svg{display:block;width:100%;height:auto;overflow:visible}
+#qp-one text,#qp-zero text{font-family:'Mukta Mahee',system-ui,-apple-system,'Segoe UI',sans-serif!important}
+/* Video finished (or skipped): swap to the identical static logo for the hand-off. */
+.qp-static #qp-logo{visibility:visible}
+.qp-static #qp-video{display:none}
+.qp-wait #qp-logo svg{animation:qp-pulse 1.6s ease-in-out infinite}
+@keyframes qp-pulse{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){#qp-video{display:none}#qp-logo{visibility:visible}}

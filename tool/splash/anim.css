@@ -1,0 +1,32 @@
+html,body{background:#0A0A0A;margin:0}
+#qp-splash{position:fixed;inset:0;z-index:2147483647;background:#0A0A0A;cursor:pointer;overflow:hidden}
+#qp-logo{position:absolute;left:50%;top:50%;width:min(80vw,640px);margin-left:calc(min(80vw,640px)/-2);margin-top:calc(min(80vw,640px)*-0.16403);transform-origin:0 0;animation:qp-shift .7s cubic-bezier(.22,1,.36,1) 3.3s both}
+#qp-trails{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#qp-logo svg{display:block;width:100%;height:auto;overflow:visible}
+.qp-l{transform-box:fill-box;transform-origin:center;animation:.45s cubic-bezier(.22,1,.36,1) both}
+#qp-one text,#qp-zero text{font-family:'Mukta Mahee',system-ui,-apple-system,'Segoe UI',sans-serif!important}
+/* Globe appears as the trails reach the middle (keep in sync with G_START in splash.js); two trails (splash.js, canvas) orbit it, then the real orbit art takes over */
+#qp-globe{animation-name:qp-in;animation-duration:.6s;animation-delay:.85s}
+#qp-orbit{animation-name:qp-fade;animation-duration:.12s;animation-delay:2.3s;animation-timing-function:linear}
+/* Phase 3: binary nodes pop */
+#qp-one{animation-name:qp-pop;animation-delay:2.45s}
+#qp-zero{animation-name:qp-pop;animation-delay:2.6s}
+/* Phase 4: shield, chain, lock */
+#qp-shield{animation-name:qp-in;animation-delay:2.7s}
+#qp-chain{animation-name:qp-in;animation-delay:2.8s}
+#qp-lock{animation-name:qp-in;animation-delay:2.9s}
+/* Phase 5: logo slides left, wordmark wipes in, then QChain Assets */
+#qp-word{animation-name:qp-wipe;animation-duration:.5s;animation-delay:3.4s}
+#qp-sub{animation-name:qp-fade;animation-duration:.35s;animation-delay:3.65s}
+@keyframes qp-pop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:none}}
+@keyframes qp-in{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}
+@keyframes qp-wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes qp-fade{from{opacity:0}to{opacity:1}}
+/* icon centre sits 28.1% right of the full logo centre */
+@keyframes qp-shift{from{transform:translateX(28.1%)}to{transform:none}}
+@keyframes qp-pulse{50%{opacity:.55}}
+/* Final frame: skip, reduced motion, hand-off */
+.qp-static #qp-logo,.qp-static .qp-l{animation:none}
+.qp-static #qp-trails{display:none}
+.qp-wait #qp-logo svg{animation:qp-pulse 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#qp-logo,.qp-l{animation:none}#qp-trails{display:none}}

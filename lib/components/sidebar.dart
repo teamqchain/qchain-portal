@@ -6,6 +6,7 @@ import 'package:qportal_webapp/services/core_api.dart';
 import 'package:qportal_webapp/theme/appColours.dart';
 import 'package:qportal_webapp/theme/appTextStyle.dart';
 import 'package:qportal_webapp/routes/webApp_shell.dart';
+import 'package:qportal_webapp/splash/splash_bridge.dart';
 // TODO: Adjust this import path to match where your ApiService is located
 
 // ─── NAV ITEM MODEL ───────────────────────────────────────────────────────────
@@ -125,6 +126,7 @@ class _AppSidebarState extends State<AppSidebar> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _reportLogoRect());
     _checkHealth(); // Initial check
     // Poll every 15 seconds
     _healthTimer = Timer.periodic(const Duration(seconds: 15), (_) {
@@ -201,6 +203,15 @@ class _AppSidebarState extends State<AppSidebar> {
     );
   }
 
+  // Lets the HTML splash (web/index.html) settle its logo onto this one.
+  final GlobalKey _logoKey = GlobalKey();
+
+  void _reportLogoRect() {
+    final box = _logoKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return;
+    reportSplashLogoRect(box.localToGlobal(Offset.zero) & box.size);
+  }
+
   Widget _buildLogo() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 22, 16, 18),
@@ -209,6 +220,8 @@ class _AppSidebarState extends State<AppSidebar> {
         children: [
           SvgPicture.asset(
             'assets/images/QPortal_logo_complete.svg',
+            key: _logoKey,
+            height: 150 * 31.361395 / 95.597107,
             width: 150,
           ),
         ],
