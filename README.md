@@ -25,7 +25,7 @@ QPortal is hosted on Vercel. Open it in any browser; there is nothing to install
 
 | App | What it is | Link |
 |-----|-----------|------|
-| **QPortal** | Issuer / Verifier / IT-Admin web portal | **<VERCEL_URL>** |
+| **QPortal** | Issuer / Verifier / IT-Admin web portal | **https://qportal.vercel.app** |
 
 > ⚠️ **It's a live demo, not production.** The portal itself is served from Vercel's CDN, but the API it calls
 > runs on our university VM, so data may be unavailable at times. The demo database is shared by everyone,
@@ -64,7 +64,7 @@ field hashes) and with exactly the fields a holder chooses to disclose.
                     ▼
      QPortal  ·  static Flutter web build  ·  Vercel CDN
                     │
-                    │  JSON API calls to API_BASE_URL (cross-origin, allowed by the backend's CORS)
+                    │  JSON API calls to kApiBaseUrl (cross-origin, allowed by the backend's CORS)
                     ▼
      https://qchain.tail4fff4b.ts.net/api   ──  Tailscale Funnel  ──▶  gateway (Nginx)
                                                                           │
@@ -78,8 +78,8 @@ field hashes) and with exactly the fields a holder chooses to disclose.
 ```
 
 - **Static hosting.** `flutter build web` produces plain HTML, JavaScript and assets; Vercel serves them from its CDN.
-- **API address.** The backend URL is compiled into the app with `--dart-define=API_BASE_URL=…`
-  (`lib/utils/webApp_config.dart`). Without it, the app uses `http://localhost:3000` for local development.
+- **API address.** The backend URL is the constant `kApiBaseUrl` in `lib/utils/webApp_config.dart`, currently the public
+  API `https://qchain.tail4fff4b.ts.net/api`. To use another backend, change that line.
 - **Path URLs.** The portal uses path-style URLs (`usePathUrlStrategy()`), so `vercel.json` rewrites every
   unknown path to `index.html`; refreshing `/dashboard` works.
 - **Certificate rendering** comes from the shared package [qchain-shared](https://github.com/teamqchain/qchain-shared),
@@ -113,13 +113,13 @@ qchain-portal/
 │   ├── models/                   # ISSUER/, VERIFIER/, IT_ADMIN/ and helper models
 │   ├── services/                 # API clients that talk to the backend
 │   ├── routes/ view/ theme/      # navigation, page layout, colours and text styles
-│   └── utils/                    # webApp_config.dart (API_BASE_URL) and helpers
+│   └── utils/                    # webApp_config.dart (kApiBaseUrl) and helpers
 ├── assets/                       # fonts and logos
 ├── web/                          # index.html, manifest, icons
 ├── test/                         # widget tests
 ├── android/ ios/ linux/ macos/ windows/   # Flutter platform folders (only web is deployed)
-├── scripts/vercel-build.sh       # Vercel build: installs Flutter 3.44.0, builds the web app
-├── vercel.json                   # Vercel settings + rewrite of every path to index.html
+├── vercel-install.sh             # Vercel install step: downloads the Flutter SDK (and gives git the token for qchain-shared)
+├── vercel.json                   # rewrites every path to the app, so refreshing a page works
 ├── pubspec.yaml · pubspec.lock   # dependencies (qchain_shared pinned by commit in the lock file)
 └── LICENSE
 ```
@@ -130,8 +130,8 @@ qchain-portal/
 
 ### Prerequisites
 
-- Flutter **3.44.0** with web support, and Chrome
-- Network access to the QChain API (the public demo API, or a backend running locally from qchain-backend)
+- Flutter with web support (3.44 or newer; the Vercel build uses Flutter's current stable release, 3.47.9 on 10 November 2026), and Chrome
+- Network access to the public QChain API, or a backend running locally from qchain-backend (see "API address" above)
 
 ### 1. Clone
 
@@ -143,23 +143,23 @@ cd qchain-portal
 ### 2. Install the dependencies
 
 ```bash
-flutter pub get        # also fetches qchain-shared from GitHub
+flutter pub get        # also fetches qchain-shared from GitHub (private: needs your GitHub login)
 ```
+
+> `qchain-shared` is a private repository. Your GitHub account must be a member of the `teamqchain` organisation; git asks for your login, or uses the one you saved.
 
 ### 3. Run
 
 ```bash
-# against the public demo API
-flutter run -d chrome --dart-define=API_BASE_URL=https://qchain.tail4fff4b.ts.net/api
-
-# against a backend on this machine (the default when API_BASE_URL is not set)
-flutter run -d chrome
+flutter run -d chrome        # talks to the API set in lib/utils/webApp_config.dart (the public demo API)
 ```
+
+For a backend on your own machine, temporarily set `kApiBaseUrl` to `http://localhost:3000` (and don't commit that).
 
 ### 4. Build
 
 ```bash
-flutter build web --release --dart-define=API_BASE_URL=https://qchain.tail4fff4b.ts.net/api
+flutter build web --release
 # output: build/web/
 ```
 
@@ -169,9 +169,9 @@ flutter build web --release --dart-define=API_BASE_URL=https://qchain.tail4fff4b
 
 QPortal deploys itself through Vercel's GitHub integration:
 
-- **Push to `main`** → Vercel runs `scripts/vercel-build.sh` and publishes the new version to production.
+- **Push to `main`** → Vercel runs `vercel-install.sh` (downloads the Flutter SDK), builds the web app and publishes the new version to production. The build command and output folder are set in the Vercel project's settings; the build uses Flutter's current stable release.
 - **Push to any other branch, or open a pull request** → Vercel builds a separate preview URL.
-- **`API_BASE_URL`** is set in the Vercel project's environment variables, for both Production and Preview.
+- **`GITHUB_TOKEN`** is set in the Vercel project's environment variables: a read-only token for the private qchain-shared repository, which `vercel-install.sh` hands to git so the build can download it.
 
 > ⚠️ On Vercel's free plan, automatic deployments only go through for commits by the GitHub account connected to the
 > Vercel account. If a deployment shows **Blocked**, redeploy it from the Vercel dashboard.

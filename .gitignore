@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Repo split (Nov 2026)
+/flutter/
+/.vercel/
+pubspec_overrides.yaml
